@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework import serializers
 from account.email_sender import send_register_email, forgot_password_email
-
+from user_profile.models import UserProfile
 User = get_user_model()
 
 
@@ -26,6 +26,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         code = user.activation_code
+        UserProfile.objects.create(owner=user)
         send_register_email(code, user.email)
         return user
 
