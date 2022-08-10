@@ -1,6 +1,7 @@
 
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 
@@ -27,3 +28,20 @@ class Like(models.Model):
 
     def __str__(self):
         return f'{self.post} {self.like}'
+
+
+
+class Rating(models.Model):
+    """Модель для рейтинга"""
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ratings', verbose_name='Владелец рейтинга')
+    product = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='ratings', verbose_name='Пост')
+    rating = models.SmallIntegerField(
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(10)
+        ], default=1
+    )
+
+    def __str__(self):
+        return f'{self.product} - {self.rating}'

@@ -1,5 +1,5 @@
-from .serializers import PostSerializer
-from .models import Post, Like
+from .serializers import PostSerializer, RatingSerializer
+from .models import Post, Like, Rating
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from user_profile.permissions import IsOwnerOrReadOnly
 from rest_framework import viewsets
@@ -34,3 +34,14 @@ class PostViewSet(viewsets.ModelViewSet):
         except Exception as e:
             print(e)
             return Response('Нет такого поста!')
+
+    
+    @action(methods=['POST'], detail=True)
+    def rating(self, request, pk, *args, **kwargs):
+        serializer = RatingSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        obj, _ = Rating.objects.get_or_create(product_id=pk,
+                                              owner=request.user)
+        obj.rating = request.data['rating']
+        obj.save()
+        return Response(request.data, status=201)
