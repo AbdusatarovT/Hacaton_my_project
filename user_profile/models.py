@@ -7,6 +7,7 @@ User = get_user_model()
 
 
 class UserProfile(models.Model):
+    '''Модель для профиля User'''
     options = (
         ('male', 'Male'),
         ('female', 'Female'),
@@ -31,6 +32,7 @@ class UserProfile(models.Model):
 
 
 class Comment(models.Model):
+    '''Модель для коментариев'''
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     comment = models.TextField()

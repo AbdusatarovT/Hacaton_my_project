@@ -21,7 +21,7 @@ class Post(models.Model):
 
 
 class Like(models.Model):
-
+    '''Модель для Like'''
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='likes', verbose_name='Владелиц лайка')
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes', verbose_name='пост')
     like = models.BooleanField('Лайк', default=False)
@@ -45,3 +45,13 @@ class Rating(models.Model):
 
     def __str__(self):
         return f'{self.product} - {self.rating}'
+
+
+class Favorite(models.Model):
+    '''Модель для избранного'''
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorits')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='favorits')
+    favorite = models.BooleanField('Избранное',default=False)
+
+    def __str__(self):
+        return f'{self.owner} {self.post}'

@@ -21,6 +21,7 @@ class CommentSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         rep = super().to_representation(instance)
         rep['owner'] = instance.owner.email
+        rep['post'] = instance.post.content
         return rep
 
     class Meta:

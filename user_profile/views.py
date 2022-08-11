@@ -4,6 +4,8 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from . permissions import IsOwnerOrReadOnly
 from . serializers import CommentSerializer, ProfileSerializer
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter, SearchFilter
 
 
 class ProfileViewSet(viewsets.ModelViewSet):
@@ -11,6 +13,10 @@ class ProfileViewSet(viewsets.ModelViewSet):
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly]
+    filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
+    filterset_fielsd = ['gender']
+    ordering_fields = ['studies_at', 'lives_in', 'works_at']
+    search_fields = ['nik_name']
                          
 
     def perform_create(self, serializer):

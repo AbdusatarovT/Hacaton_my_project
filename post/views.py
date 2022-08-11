@@ -1,11 +1,19 @@
+
 from .serializers import PostSerializer, RatingSerializer
-from .models import Post, Like, Rating
+from .models import Post, Like, Rating, Favorite
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from user_profile.permissions import IsOwnerOrReadOnly
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 
+
+
+class LargeResultSetPagination(PageNumberPagination):
+    page_size = 2
+    page_size_query_param = 'parm_size'
+    max_page_size = 10000
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -14,16 +22,20 @@ class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly]
+    pagination_class = LargeResultSetPagination
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-
+    '''Функция для добавления Лайка'''
     @action(methods=['POST'], detail=True)
     def like(self, request, pk, *args, **kwargs):
         try:
             like_object, _ = Like.objects.get_or_create(owner=request.user, post_id=pk)
+            print(like_object)
+            print(pk)
             like_object.like = not like_object.like
+            print(like_object.like)
             like_object.save()
             status = 'liked'
 
@@ -31,11 +43,10 @@ class PostViewSet(viewsets.ModelViewSet):
                 return Response({'status': status})
             status = 'unliked'
             return Response({'status': status})
-        except Exception as e:
-            print(e)
+        except:
             return Response('Нет такого поста!')
 
-    
+    '''Функция для добавления рейтинга'''
     @action(methods=['POST'], detail=True)
     def rating(self, request, pk, *args, **kwargs):
         serializer = RatingSerializer(data=request.data)
@@ -45,3 +56,20 @@ class PostViewSet(viewsets.ModelViewSet):
         obj.rating = request.data['rating']
         obj.save()
         return Response(request.data, status=201)
+
+
+    '''Функция для добавления или удаления из избранного'''
+    @action(methods=['POST'], detail=True)
+    def favorit(self, request, pk, *args, **kwargs):
+        try:
+            favorite_obj, _ = Favorite.objects.get_or_create(owner=request.user, post_id=pk)
+            favorite_obj.favorite = not favorite_obj.favorite
+            favorite_obj.save()
+            status = 'Вы добавили в избранное'
+
+            if favorite_obj.favorite:
+                return Response({'status': status})
+            status = 'Вы удалили из избранного'
+            return Response({'status': status})
+        except:
+            return Response('Нет такого поста!')

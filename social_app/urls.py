@@ -17,9 +17,27 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title='Python 21 shop',
+        default_version='v1',
+        description='Наш первый интернет магазин'
+
+    ),
+    public=True
+
+)
+
+
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('swagger/', schema_view.with_ui('swagger')),
     path('account/', include('account.urls')),
     path('profile/', include('user_profile.urls')),
     path('post/', include('post.urls'))
