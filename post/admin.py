@@ -1,5 +1,5 @@
 from django.contrib import admin
-from post.models import Post, Like, Favorite
+from post.models import Contact, Post, Like, Favorite
 
 
 class PostAdmin(admin.ModelAdmin):
@@ -13,3 +13,4 @@ class FavoritAdmin(admin.ModelAdmin):
 admin.site.register(Post, PostAdmin)
 admin.site.register(Like)
 admin.site.register(Favorite, FavoritAdmin)
+admin.site.register(Contact)

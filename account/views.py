@@ -11,6 +11,7 @@ User = get_user_model()
 
 
 class RegisterApiView(APIView):
+    '''Регистрация'''
     def post(self, request):
         data = request.data
         serializers = RegisterSerializer(data=data)
@@ -22,9 +23,9 @@ class RegisterApiView(APIView):
 
 
 class ActivationView(APIView):
+    '''Получение кода активаци'''
     def get(self, request, activation_code):
         try:
-            print(activation_code)
             user = User.objects.get(activation_code=activation_code)
             user.is_active = True
             user.activation_code = ''
@@ -36,10 +37,12 @@ class ActivationView(APIView):
 
 
 class loginApiView(ObtainAuthToken):
+    '''Логин'''
     serializer_class = LoginSerializer
 
 
 class ChangePasswordView(APIView):
+    '''Смена пароля'''
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -53,6 +56,7 @@ class ChangePasswordView(APIView):
 
 
 class ForgotPasswordView(APIView):
+    '''Вастоновление пароля'''
     def post(self, request):
         data = request.data
         serializer = ForgotPasswordSerializer(data=data)
@@ -62,6 +66,7 @@ class ForgotPasswordView(APIView):
 
 
 class ForgotPasswordComplete(APIView):
+    '''Подтверждение нового пароля'''
     def post(self, request):
         data = request.data
         serializer = ForgotPasswordCompleteSerializer(data=data)

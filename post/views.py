@@ -1,12 +1,15 @@
 
-from .serializers import PostSerializer, RatingSerializer
-from .models import Post, Like, Rating, Favorite
+from .serializers import ContactSerializer, PostSerializer, RatingSerializer
+from .models import Contact, Post, Like, Rating, Favorite
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from user_profile.permissions import IsOwnerOrReadOnly
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from rest_framework import mixins
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import GenericViewSet
 
 
 
@@ -73,3 +76,10 @@ class PostViewSet(viewsets.ModelViewSet):
             return Response({'status': status})
         except:
             return Response('Нет такого поста!')
+
+
+
+class ContactView(mixins.CreateModelMixin, mixins.DestroyModelMixin, GenericViewSet):
+    queryset = Contact.objects.all()
+    serializer_class = ContactSerializer
+    permission_classes = [IsAuthenticated]

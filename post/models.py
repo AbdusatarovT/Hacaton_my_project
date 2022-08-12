@@ -55,3 +55,10 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f'{self.owner} {self.post}'
+
+
+class Contact(models.Model):
+    email = models.EmailField(unique=True)
+
+    def __str__(self):
+        return self.email

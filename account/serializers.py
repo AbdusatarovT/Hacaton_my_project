@@ -1,11 +1,14 @@
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework import serializers
-from account.email_sender import send_register_email, forgot_password_email
+from account.email_sender import forgot_password_email
+from account.tasks import celery_send_confirmation_email
+from post.models import Contact
 from user_profile.models import UserProfile
 User = get_user_model()
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    '''Регистрация'''
     password2 = serializers.CharField(min_length=6,
                                       write_only=True,
                                       required=True)
@@ -27,13 +30,16 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         code = user.activation_code
         UserProfile.objects.create(owner=user)
-        send_register_email(code, user.email)
+        Contact.objects.create(email=user)
+        # send_register_email(code, user.email)
+        celery_send_confirmation_email.delay(code, user.email)
         return user
 
 
 
 
 class LoginSerializer(serializers.Serializer):
+    '''Логин'''
     email = serializers.EmailField(required=True)
     password = serializers.CharField(required=True)
 
@@ -58,6 +64,7 @@ class LoginSerializer(serializers.Serializer):
 
 
 class ChangePasswordSerializer(serializers.Serializer):
+    '''Смена пороля'''
     old_password = serializers.CharField(required=True)
     password = serializers.CharField(required=True, min_length=6)
     password2 = serializers.CharField(required=True, min_length=6)
@@ -85,6 +92,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 class ForgotPasswordSerializer(serializers.Serializer):
+    '''Востановаление забытого пароля'''
     email = serializers.EmailField(required=True)
 
     def validate_email(self, email):
@@ -102,6 +110,7 @@ class ForgotPasswordSerializer(serializers.Serializer):
 
 
 class ForgotPasswordCompleteSerializer(serializers.Serializer):
+    '''Подтверждение нового пароля'''
     email = serializers.EmailField(required=True)
     code = serializers.CharField(min_length=8, required=True)
     password = serializers.CharField(required=True, min_length=6)
