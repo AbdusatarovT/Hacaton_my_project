@@ -41,3 +41,14 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.comment
+
+
+
+class Friend(models.Model):
+    '''Модель для добавление в друзья'''
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friends', verbose_name='Тот кто хочет дружить')
+    profil = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='friends', verbose_name='Тот с кем хочет дружить')
+    add_delet = models.BooleanField('Друзья', default=False)
+
+    def __str__(self):
+        return f'{self.profil} {self.add_delet}'
