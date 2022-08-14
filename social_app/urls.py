@@ -19,13 +19,15 @@ from django.conf import settings
 from django.conf.urls.static import static
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from account import views
+from django.contrib.auth import views as auth_views
 
 
 schema_view = get_schema_view(
     openapi.Info(
-        title='Python 21 shop',
-        default_version='v1',
-        description='Наш первый интернет магазин'
+        title='Социальная сеть Makers',
+        default_version='Turbo',
+        description='Makers - это больше чем социальная сеть'
 
     ),
     public=True
@@ -40,5 +42,10 @@ urlpatterns = [
     path('swagger/', schema_view.with_ui('swagger')),
     path('account/', include('account.urls')),
     path('profile/', include('user_profile.urls')),
-    path('post/', include('post.urls'))
+    path('post/', include('post.urls')),
+    path("login/", views.login, name="login"),
+    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+    path('social-auth/', include('social_django.urls', namespace="social")),
+    path("", views.home, name="home"),
+    
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

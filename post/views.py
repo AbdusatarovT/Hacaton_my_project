@@ -40,11 +40,11 @@ class PostViewSet(viewsets.ModelViewSet):
             like_object.like = not like_object.like
             print(like_object.like)
             like_object.save()
-            status = 'liked'
+            status = 'Вы поставили Like'
 
             if like_object.like:
                 return Response({'status': status})
-            status = 'unliked'
+            status = 'Вы удалили Like'
             return Response({'status': status})
         except:
             return Response('Нет такого поста!')

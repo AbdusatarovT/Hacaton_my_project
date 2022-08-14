@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 from rest_framework.authtoken.views import ObtainAuthToken
 from account.serializers import LoginSerializer
 from django.contrib.auth import get_user_model
@@ -73,3 +74,12 @@ class ForgotPasswordComplete(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.set_new_pass()
         return Response('Окей! пороль поменял!')
+
+
+
+def login(request):
+    return render(request, 'login.html')
+
+@login_required
+def home(request):
+    return render(request, 'home.html')
